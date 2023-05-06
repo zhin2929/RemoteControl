@@ -509,13 +509,17 @@ struct ControlServer {
     smkServer = {};
   }
 
-  //处理控制端的消息
-  int HandleControlMsg(SOCKET sock) {
+  void SetSock(SOCKET sock) {
     smkServer.SetSocket(sock);
     fileServer.SetSocket(sock);
     cmdServer.SetSocket(sock);
+  }
+
+  //处理控制端的消息
+  int HandleControlMsg(SOCKET sock) {
+    SetSock(sock);
     auto pPacket = itcp.RecvPacket(sock);
-    switch ((*pPacket).m_packetType) {
+    switch (pPacket->m_packetType) {
       case PACKET_TYPE::C2S_DOWNLOAD: //接收控制端发送的下载文件命令
       {
         fileServer.DownloadFile(pPacket);
